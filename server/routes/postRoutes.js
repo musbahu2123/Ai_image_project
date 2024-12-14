@@ -29,28 +29,32 @@ router.route("/").get(async(req, res) => {
 
 // POST ROUTE
 router.route('/').post(async (req, res) => {
-
   try {
+    const { name, prompt, photo } = req.body;
 
-      const { name, prompt, photo } = req.body;
+    if (!name || typeof name !== 'string') throw new Error("Invalid or missing 'name'");
+    if (!prompt || typeof prompt !== 'string') throw new Error("Invalid or missing 'prompt'");
+    if (!photo || typeof photo !== 'string') throw new Error("Invalid or missing 'photo'");
 
-      if (!name || typeof name !== 'string') throw new Error("Invalid or missing 'name'");
-      if (!prompt || typeof prompt !== 'string') throw new Error("Invalid or missing 'prompt'");
-      if (!photo || typeof photo !== 'string') throw new Error("Invalid or missing 'photo'");
+    // Optimize the image while uploading to Cloudinary
+    const photoUrl = await cloudinary.uploader.upload(photo, {
+      transformation: [
+        { width: 1000, crop: "scale" },   // Scale image to a max width of 1000px
+        { quality: "auto" },             // Adjust quality automatically
+        { fetch_format: "auto" }         // Deliver image in optimal format
+      ]
+    });
 
+    const newPost = await Post.create({
+      name,
+      prompt,
+      photo: photoUrl.url,
+    });
 
-      const photoUrl = await cloudinary.uploader.upload(photo);
-
-      const newPost = await Post.create({
-          name,
-          prompt,
-          photo: photoUrl.url,
-      });
-
-      res.status(201).json({ success: true, data: newPost });
+    res.status(201).json({ success: true, data: newPost });
   } catch (err) {
-      console.error("Error in POST route:", err.message);
-      res.status(500).json({ success: false, message: err.message });
+    console.error("Error in POST route:", err.message);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
