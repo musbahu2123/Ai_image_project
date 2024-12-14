@@ -31,7 +31,6 @@ router.route("/").get(async(req, res) => {
 router.route('/').post(async (req, res) => {
 
   try {
-      console.log("Received request body:", req.body); // Log the request body
 
       const { name, prompt, photo } = req.body;
 
@@ -39,17 +38,14 @@ router.route('/').post(async (req, res) => {
       if (!prompt || typeof prompt !== 'string') throw new Error("Invalid or missing 'prompt'");
       if (!photo || typeof photo !== 'string') throw new Error("Invalid or missing 'photo'");
 
-      console.log("Valid request data. Proceeding with upload...");
 
       const photoUrl = await cloudinary.uploader.upload(photo);
-      console.log("Cloudinary upload successful:", photoUrl);
 
       const newPost = await Post.create({
           name,
           prompt,
           photo: photoUrl.url,
       });
-      console.log("MongoDB insert successful:", newPost);
 
       res.status(201).json({ success: true, data: newPost });
   } catch (err) {
