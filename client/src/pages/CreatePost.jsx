@@ -26,7 +26,7 @@ const CreatePost = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/cloud.leonardo.ai/api/rest/v1/generations",
+        "https://ai-image-project-ofof.onrender.com/cloud.leonardo.ai/api/rest/v1/generations",
         {
           method: "POST",
           headers: {
@@ -71,7 +71,7 @@ const CreatePost = () => {
     if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/v1/posts", {
+        const response = await fetch("https://ai-image-project-ofof.onrender.com/api/v1/posts", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
